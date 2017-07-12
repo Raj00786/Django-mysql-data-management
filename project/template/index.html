@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h2>All Nodes list</h2>
+  <marquee>Select node id to see data of nodes</marquee>
+  <p><span style="background-color: green;color:white">Green color:</span> working node   <span style="background-color:red;color:white">Red color:</span>Node not working</p>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Node id</th>
+        <th>Name</th>
+        <th>Location</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for data in data %}
+	      <tr class="success">
+	        <td><a href="node/{{data.node_id}}">{{data.node_id}}</a></td>
+	        <td>{{data.name}}</td>
+	        <td>{{data.location}}</td>
+	        <td>{{data.timestamp}}</td>
+	      </tr> 
+<!-- 	      <tr class="danger">
+	        <td>{{data.node_id}}</td>
+	        <td>{{data.battery_str}}</td>
+	        <td>{{data.signal_str}}</td>
+	        <td>{{data.timestamp}}</td>
+	        <td>{{data.data}}</td>
+	      </tr>      -->	
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,4 @@
+{{writer}}
+
+node_id,battery_str,signal_str,datetime,data
+1,23.34,53.23,21/Jan/2017,123.4

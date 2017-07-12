@@ -1,0 +1,273 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h2>Node data</h2>
+  <h3 class="primary" style="text-align: center;">Table for node {{nodeid}}</h3>
+  <button onclick="window.open('data')" class="pull-right btn btn-primary">Export</button>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Timestamp</th>
+        <th>Battery Strength</th>
+        <th>Signal Strength</th>
+        <th>data</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for data in data %}
+	      <tr class="success">
+          <td>{{data.timestamp}}</td>
+	        <td>{{data.battery_str}}</td>
+	        <td>{{data.signal_str}}</td>
+	        <td>{{data.data}}</td>
+	      </tr> 
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+
+<script type="text/javascript">
+  $(document).ready(function () {
+    Highcharts.setOptions({
+        global: {
+            useUTC: false
+        }
+    });
+        batteryData = new Array();
+        var signalData = [];  
+        var mainData=[];
+        var timestamp=[];
+        var data='';
+        $.ajax({
+              url:'http://127.0.0.1:8000/api/1/?format=json',
+              type:"GET",
+              dataType:'json',
+              success:function(result){
+                // console.log(result);
+                for(var i=0;i<result.results.length;i++)
+                {
+                  batteryData.push(parseInt(result.results[i].battery_str));
+                  signalData.push(parseInt(result.results[i].signal_str));
+                  mainData.push(parseInt(result.results[i].data));
+                  timestamp.push(result.results[i].timestamp);
+                }
+                // console.log(batteryData);
+              }
+          });
+        
+
+        batteryData=[12,112,35,87];
+        timestamp=['1am','1.2am','2am','2.3am'];
+
+    Highcharts.chart('container', {
+        chart: {
+            type: 'spline',
+            animation: Highcharts.svg, // don't animate in old IE
+            marginRight: 10,
+            events: {
+                load: function () {
+                    // set up the updating of the chart each second
+                    var series = this.series[0];
+                    setInterval(function () {
+                        
+                        // var x = (new Date()).getTime(), // current time
+                        //     y = Math.random();
+                        // series.addPoint([x, y], true, true);
+                        
+                        $.ajax({
+                            url:'http://127.0.0.1:8000/api/1/?format=json',
+                            type:"GET",
+                            dataType:'json',
+                            success:function(result){
+                              // var nt = parseInt(result.results[0].timestamp);
+                              
+                              var nt = (new Date()).getTime();
+                              var nd = parseInt(result.results[0].battery_str);
+
+                              // var x = (new Date()).getTime(), // current time
+                              //     y = Math.random();
+                              series.addPoint([nt, nd], true, true);
+                              console.log(result);
+                              // for(var i=0;i<1;i++)
+                              // {
+                              //   batteryData.append(parseInt(result.results[i].battery_str));
+                              //   signalData.append(parseInt(result.results[i].signal_str));
+                              //   mainData.append(parseInt(result.results[i].data));
+                              //   timestamp.append(result.results[i].timestamp);
+                              // }
+                            }});
+                      }
+                    , 1000);
+                }
+            }
+        },
+        title: {
+            text: 'Live random data'
+        },
+        xAxis: {
+            type: timestamp,
+            tickPixelInterval: 150
+        },
+        yAxis: {
+            title: {
+                text: 'Value'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            formatter: function () {
+                return '<b>' + this.series.name + '</b><br/>' +
+                    Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                    Highcharts.numberFormat(this.y, 2);
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        exporting: {
+            enabled: false
+        },
+        series: [{
+            name: 'Random data',
+            data: batteryData
+        }]
+    });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 
+
+
+
+<script type="text/javascript">
+  $(function(){
+      var node = window.location.pathname.split('/')[2];
+      ajaxCall();
+      function ajaxCall(){
+        var batteryData = [];
+        var signalData = [];  
+        var mainData=[];
+        var timestamp=[];
+        var data='';
+        $.ajax({
+            url:'http://127.0.0.1:8000/api/'+node+'/?format=json',
+            type:"GET",
+            dataType:'json',
+            success:function(result){
+              console.log(result);
+              for(var i=0;i<result.results.length;i++)
+              {
+                batteryData.push(parseInt(result.results[i].battery_str));
+                signalData.push(parseInt(result.results[i].signal_str));
+                mainData.push(parseInt(result.results[i].data));
+                timestamp.push(result.results[i].timestamp);
+              }
+
+              Highcharts.chart('container', {
+                chart: {
+                    type: 'areaspline'
+                },
+                title: {
+                    text: 'Average fruit consumption during one week'
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'left',
+                    verticalAlign: 'top',
+                    x: 150,
+                    y: 100,
+                    floating: true,
+                    borderWidth: 1,
+                    backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+                },
+                xAxis: {
+                    categories:timestamp,
+                    plotBands: [{ // visualize the weekend
+                        from: 4.5,
+                        to: 6.5,
+                        color: 'rgba(68, 170, 213, .2)'
+                    }]
+                },
+                yAxis: {
+                    title: {
+                        text: 'Data'
+                    }
+                },
+                tooltip: {
+                    shared: true,
+                    valueSuffix: ' units'
+                },
+                credits: {
+                    enabled: false
+                },
+                plotOptions: {
+                    areaspline: {
+                        fillOpacity: 0.5
+                    }
+                },
+                series: [{
+                    name: 'Battery Stats',
+                    data: batteryData
+                },
+                {
+                    name: 'Signal Stats',
+                    data: signalData
+                },
+                {
+                    name: 'Water level Stats',
+                    data: mainData
+                },]
+            });
+            },
+            error:function(error){
+              console.log('error');
+            }
+          });
+      }
+      setInterval(ajaxCall,5000);
+  });
+</script>
+ -->
+</body>
+</html>
