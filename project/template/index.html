@@ -18,29 +18,25 @@
     <thead>
       <tr>
         <th>Node id</th>
-        <th>Name</th>
-        <th>Location</th>
-        <th>Timestamp</th>
+        <th>Battery Strength<span style="color:red">*</span></th>
+        <th>Signal Strength<span style="color:red">*</span></th>
+        <th>Timestamp<span style="color:red">*</span></th>
       </tr>
     </thead>
     <tbody>
-    {% for data in data %}
+
+    {% for node in node_data %}
 	      <tr class="success">
-	        <td><a href="node/{{data.node_id}}">{{data.node_id}}</a></td>
-	        <td>{{data.name}}</td>
-	        <td>{{data.location}}</td>
-	        <td>{{data.timestamp}}</td>
-	      </tr> 
-<!-- 	      <tr class="danger">
-	        <td>{{data.node_id}}</td>
-	        <td>{{data.battery_str}}</td>
-	        <td>{{data.signal_str}}</td>
-	        <td>{{data.timestamp}}</td>
-	        <td>{{data.data}}</td>
-	      </tr>      -->	
-    {% endfor %}
+	        <td><a href="node/{{node.node_id}}">{{node.node_id}}</a></td>
+          <td>{{ node.battery_str }}</td>
+          <td>{{ node.signal_str }}</td>
+          <td>{{ node.ctimestamp }}</td>
+        </tr> 
+    {% endfor %}    
+
     </tbody>
   </table>
+  <span class="pull-right"><span style="color:red">*</span> Updated values in every 15 minutes</span>
 </div>
 
 </body>

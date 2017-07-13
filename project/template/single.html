@@ -28,7 +28,7 @@
     <tbody>
     {% for data in data %}
 	      <tr class="success">
-          <td>{{data.timestamp}}</td>
+          <td>{{data.ctimestamp}}</td>
 	        <td>{{data.battery_str}}</td>
 	        <td>{{data.signal_str}}</td>
 	        <td>{{data.data}}</td>
@@ -47,6 +47,7 @@
 
 <script type="text/javascript">
   $(document).ready(function () {
+    $('#container').css('background-image', 'url(https://s-media-cache-ak0.pinimg.com/originals/4f/9b/63/4f9b6352fa82dfe82e27a2c52989aaa9.gif)');
     Highcharts.setOptions({
         global: {
             useUTC: false
@@ -54,107 +55,122 @@
     });
         batteryData = new Array();
         var signalData = [];  
-        var mainData=[];
+        mainData=[];
         var timestamp=[];
         var data='';
-        $.ajax({
-              url:'http://127.0.0.1:8000/api/1/?format=json',
-              type:"GET",
-              dataType:'json',
-              success:function(result){
-                // console.log(result);
-                for(var i=0;i<result.results.length;i++)
-                {
-                  batteryData.push(parseInt(result.results[i].battery_str));
-                  signalData.push(parseInt(result.results[i].signal_str));
-                  mainData.push(parseInt(result.results[i].data));
-                  timestamp.push(result.results[i].timestamp);
+        function testAjax(ordinate) {
+          $.ajax({
+                url:'http://127.0.0.1:8000/api/1/?format=json',
+                type:"GET",
+                dataType:'json',
+                success:function(result){
+                  // console.log(result);
+                  for(var i=0;i<result.results.length;i++)
+                  {
+                    batteryData.push(parseInt(result.results[i].battery_str));
+                    signalData.push(parseInt(result.results[i].signal_str));
+                    mainData.push(parseInt(result.results[i].data));
+                    timestamp.push(result.results[i].ctimestamp);
+                  }
+                  ordinate([mainData,timestamp]);
                 }
-                // console.log(batteryData);
-              }
           });
+        }
         
-
-        batteryData=[12,112,35,87];
-        timestamp=['1am','1.2am','2am','2.3am'];
-
-    Highcharts.chart('container', {
-        chart: {
-            type: 'spline',
-            animation: Highcharts.svg, // don't animate in old IE
-            marginRight: 10,
-            events: {
-                load: function () {
-                    // set up the updating of the chart each second
-                    var series = this.series[0];
-                    setInterval(function () {
-                        
-                        // var x = (new Date()).getTime(), // current time
-                        //     y = Math.random();
-                        // series.addPoint([x, y], true, true);
-                        
-                        $.ajax({
-                            url:'http://127.0.0.1:8000/api/1/?format=json',
-                            type:"GET",
-                            dataType:'json',
-                            success:function(result){
-                              // var nt = parseInt(result.results[0].timestamp);
-                              
-                              var nt = (new Date()).getTime();
-                              var nd = parseInt(result.results[0].battery_str);
-
-                              // var x = (new Date()).getTime(), // current time
-                              //     y = Math.random();
-                              series.addPoint([nt, nd], true, true);
-                              console.log(result);
-                              // for(var i=0;i<1;i++)
-                              // {
-                              //   batteryData.append(parseInt(result.results[i].battery_str));
-                              //   signalData.append(parseInt(result.results[i].signal_str));
-                              //   mainData.append(parseInt(result.results[i].data));
-                              //   timestamp.append(result.results[i].timestamp);
-                              // }
-                            }});
-                      }
-                    , 1000);
-                }
+        testAjax(function(output){
+            mainData = output[0];
+            timestamp = output[1];
+            arr = [];
+            for (var i = 0; i < 10; i++) {
+              arr.push({
+                x: timestamp[i],
+                y: mainData[i]
+              });
             }
-        },
-        title: {
-            text: 'Live random data'
-        },
-        xAxis: {
-            type: timestamp,
-            tickPixelInterval: 150
-        },
-        yAxis: {
-            title: {
-                text: 'Value'
-            },
-            plotLines: [{
-                value: 0,
-                width: 1,
-                color: '#808080'
-            }]
-        },
-        tooltip: {
-            formatter: function () {
-                return '<b>' + this.series.name + '</b><br/>' +
-                    Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                    Highcharts.numberFormat(this.y, 2);
-            }
-        },
-        legend: {
-            enabled: false
-        },
-        exporting: {
-            enabled: false
-        },
-        series: [{
-            name: 'Random data',
-            data: batteryData
-        }]
-    });
+
+            Highcharts.chart('container', {
+                chart: {
+                    type: 'spline',
+                    animation: Highcharts.svg, // don't animate in old IE
+                    marginRight: 10,
+                    events: {
+                        load: function () {
+                            // set up the updating of the chart each second
+                            var series = this.series[0];
+                            setInterval(function () {
+                                
+                                // var x = (new Date()).getTime(), // current time
+                                //     y = Math.random();
+                                // series.addPoint([x, y], true, true);
+                                
+                                $.ajax({
+                                    url:'http://127.0.0.1:8000/api/1/?format=json',
+                                    type:"GET",
+                                    dataType:'json',
+                                    beforeSend:function(){
+                                      $('#container').css('backgroundImage','https://s-media-cache-ak0.pinimg.com/originals/4f/9b/63/4f9b6352fa82dfe82e27a2c52989aaa9.gif');
+                                    },
+                                    success:function(result){
+                                      // var nt = parseInt(result.results[0].timestamp);
+                                      
+                                      var nt = result.results[0].ctimestamp;
+                                      
+                                      var nd = parseInt(result.results[0].data);
+
+                                      series.addPoint([nt, nd], true, true);
+                                      
+                                      console.log(nt);
+                                      // for(var i=0;i<1;i++)
+                                      // {
+                                      //   batteryData.append(parseInt(result.results[i].battery_str));
+                                      //   signalData.append(parseInt(result.results[i].signal_str));
+                                      //   mainData.append(parseInt(result.results[i].data));
+                                      //   timestamp.append(result.results[i].timestamp);
+                                      // }
+                                    }});
+                              }
+                            , 1000);
+                        }
+                    }
+                },
+                title: {
+                    text: 'Live random data'
+                },
+                xAxis: {
+                    type: 'timestamp',
+                    categories:timestamp,
+                    tickPixelInterval: 150
+                },
+                yAxis: {
+                    title: {
+                        text: 'Value'
+                    },
+                    plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }]
+                },
+                // tooltip: {
+                //     formatter: function () {
+                //         return '<b>' + this.series.name + '</b><br/>' +
+                //             Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                //             Highcharts.numberFormat(this.y, 2);
+                //     }
+                // },
+                legend: {
+                    enabled: false
+                },
+                exporting: {
+                    enabled: false
+                },
+                series: [{
+                    name: 'Random data',
+                    data: mainData
+                }]
+            });
+                  
+        });
 });
 </script>
 

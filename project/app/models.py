@@ -15,8 +15,8 @@ class NodeData(models.Model):
 	node 		= models.ForeignKey(NodeStats,on_delete=models.CASCADE,default=1)
 	battery_str = models.CharField(max_length=120)
 	signal_str 	= models.CharField(max_length=120,default='100')
-	timestamp 	= models.DateTimeField(auto_now=False,auto_now_add=True)
-	data 		= models.TextField()
+	ctimestamp 	= models.DateTimeField(auto_now=False,auto_now_add=True)
+	data 		= models.CharField(max_length=120)
 
 	def __str__(self):
 		return  str(self.node)

@@ -19,6 +19,6 @@ class NodeDataSerializers(ModelSerializer):
 			'node',
 			'battery_str',
 			'signal_str',
-			'timestamp',
+			'ctimestamp',
 			'data'
 		]
