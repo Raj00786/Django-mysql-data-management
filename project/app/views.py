@@ -12,7 +12,6 @@ def nodeStatsView(request):
 		node_data.append(node)
 		print(node_data)
 
-
 	return render(request,'index.html',{'data':data,'node_data':node_data})
 
 def singleNodeView(request,node_id):

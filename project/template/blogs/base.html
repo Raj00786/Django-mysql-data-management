@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{% block head %}Kristnam Techno {% endblock head %}</title>
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	
+	<link rel="stylesheet" type="text/css" href="{% static "css/style.css" %}">
+
+  {% block head_extra %}{% endblock head_extra %}
+</head>
+<body>
+
+{% if messages %}
+<ul class="alert alert-success messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.9&appId=280850659049422";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+<div class="container">
+  <ol class="breadcrumb">
+    <li><a href="{% url 'login' %}">Home</a></li>
+    <li><a href="{% url 'home' %}">Blogs</a></li>
+    {% if request.user.is_superuser %}
+      <li class=""><a href="{% url 'create' %}">Create</a></li>
+    {% endif %}
+
+    {% if not request.user.is_authenticated %}
+      <li class="pull-right"><a href="{% url 'register' %}">Register</a></li>
+      <li class="pull-right"><a href="{% url 'login' %}">Login</a></li>
+      <li class="pull-right"><a href="{% url 'forgot' %}">Forgot</a></li>
+    {% else %}
+      <li class="pull-right"><a href="{% url 'logout' %}">Logout</a></li>
+      <li class="pull-right"><a href="">{{request.user.get_username}}</a></li>
+    {% endif %}
+
+  </ol>
+{% block content %}
+{% endblock content %}
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js"></script>
+
+<script type="text/javascript">
+  $(function(){
+     $('.blog_img img').each(function(){
+        $(this).addClass('img-responsive');
+      });
+     
+    $('.messages').delay(2000).fadeOut();
+
+    var contentInput = $("#id_content");
+    function setContent(value){
+        var markedContent = marked(value)
+        $("#preview-content").html(markedContent)
+        $("#preview-content img").each(function(){
+            $(this).addClass("img-responsive")
+        })
+    }
+    setContent(contentInput.val())
+    contentInput.keyup(function(){
+        var newContent = $(this).val()
+        setContent(newContent)
+    })
+    var titleInput = $("#id_title");
+    
+    function setTitle(value) {
+        $("#preview-title").text(value)
+    }
+    setTitle(titleInput.val())
+    titleInput.keyup(function(){
+        var newContent = $(this).val()
+        setTitle(newContent)
+    });
+    
+  });
+</script>
+</body>
+</html>
